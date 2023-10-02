@@ -1,23 +1,15 @@
 import socket
-from tkinter import *
-from sys import exit
-
-
-def popupError(s):
-    popupRoot = Tk()
-    popupRoot.after(20000, exit)
-    popupButton = Button(popupRoot, text = s, font = ("Verdana", 12), bg = "yellow", command = exit)
-    popupButton.pack()
-    popupRoot.geometry('400x50+700+500')
-    popupRoot.mainloop()
-
+from participant_interface import create_participant_interface
 
 def listen_to_client():
+    """
+    Listens to incoming client connections and receives data from them.
+    """
     # create a socket object
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     # get local machine name
-    host = socket.gethostname()
+    host = '0.0.0.0'
 
     # reserve a port for your service.
     port = 12345
@@ -30,20 +22,16 @@ def listen_to_client():
 
     while True:
         # establish a connection
-        # print('Waiting for connection...')
+        print('Waiting for connection...')
         conn, addr = s.accept()
         print('Connected by', addr)
     
         # receive data from client
         data = conn.recv(1024)
-        # if not data:
-        #     break
         print('Received message:', data.decode())
-        popupError(data.decode())
-
         # close the connection
         conn.close()
+        create_participant_interface(data.decode())
 
-
-
+# Call the listen_to_client function to start listening for incoming connections
 listen_to_client()
